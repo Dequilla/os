@@ -2,8 +2,9 @@
 SRC_DIR=src
 OBJ_DIR=obj
 ISO_DIR=isodir
+OUT_DIR=build
 
-# Assembker
+# Assembler
 AS=i686-elf-as
 AS_SRC=$(wildcard $(SRC_DIR)/*.s)
 AS_OBJ=$(subst $(SRC_DIR),$(OBJ_DIR),$(subst .s,.s.o,$(AS_SRC)))
@@ -22,6 +23,10 @@ LCONF=linker.ld
 # ISO
 IOUT=myos.iso
 
+# Directories
+directories:
+	mkdir -p $(OUT_DIR) $(OBJ_DIR)
+
 # Assembly instructions
 $(OBJ_DIR)/%.s.o: $(SRC_DIR)/%.s 
 	$(AS) $< -o $@ 
@@ -32,17 +37,17 @@ $(OBJ_DIR)/%.c.o: $(SRC_DIR)/%.c
 
 # Link binary
 build: $(AS_OBJ) $(CC_OBJ)
-	$(CC) -T $(LCONF) -o $(LOUT) $(LFLAGS) $(AS_OBJ) $(CC_OBJ)
+	$(CC) -T $(LCONF) -o $(OUT_DIR)/$(LOUT) $(LFLAGS) $(AS_OBJ) $(CC_OBJ)
 
 # ISO
-iso: build
+iso: directories build
 	mkdir -p $(ISO_DIR)/boot/grub
-	cp $(LOUT) $(ISO_DIR)/boot/$(LOUT)
+	cp $(OUT_DIR)/$(LOUT) $(ISO_DIR)/boot/$(LOUT)
 	cp grub.cfg $(ISO_DIR)/boot/grub/grub.cfg
-	grub-mkrescue -o $(IOUT) $(ISO_DIR) 
-	sh check-multiboot.sh
+	grub-mkrescue -o $(OUT_DIR)/$(IOUT) $(ISO_DIR) 
+	sh scripts/check-multiboot.sh
 
 all: iso
 
 clean:
-	rm -rf $(AS_OBJ) $(CC_OBJ) $(LOUT) $(ISO_DIR) $(IOUT)
+	rm -rf $(OBJ_DIR) $(OUT_DIR) $(ISO_DIR)
