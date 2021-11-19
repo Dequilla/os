@@ -49,5 +49,8 @@ iso: directories build
 
 all: iso
 
+run: iso
+	qemu-system-i386 -cdrom $(OUT_DIR)/$(IOUT)
+
 clean:
 	rm -rf $(OBJ_DIR) $(OUT_DIR) $(ISO_DIR)
