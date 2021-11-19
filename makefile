@@ -33,7 +33,7 @@ $(OBJ_DIR)/%.s.o: $(SRC_DIR)/%.s
 
 # Compiler instructions
 $(OBJ_DIR)/%.c.o: $(SRC_DIR)/%.c
-	$(CC) -o $@ -c $< $(CFLAGS)
+	$(CC) -I./$(SRC_DIR) -o $@ -c $< $(CFLAGS)
 
 # Link binary
 build: $(AS_OBJ) $(CC_OBJ)
